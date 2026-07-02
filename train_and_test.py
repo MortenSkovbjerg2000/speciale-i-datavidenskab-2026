@@ -10,7 +10,7 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 import torch.nn as nn
 import numpy as np
-# import torch.nn.functional as F
+import torch.nn.functional as F
 import time
 from datetime import timedelta
 # ------------------------------------------
@@ -376,6 +376,56 @@ def main():
     print("Best model path:", model_save_path)
     total_time = time.perf_counter() - script_start_time
     print(f"Finished training in: {timedelta(seconds=int(total_time))}")
+
+
+
+    # Load best model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = SimpleCNN(
+        #input_channels=INPUT_CHANNELS,
+        #input_size=IMG_RESOLUTION,
+        num_classes=2
+    ).to(device)
+
+    model_save_path = os.path.join(
+        train_folder,
+        f"best_jiang_baseline_i5.pth"
+    )
+    model.load_state_dict(torch.load(model_save_path, map_location=device))
+
+    test_loss, test_acc = evaluate(model, test_loader, criterion, device)
+
+    print(f"Test loss: {test_loss:.4f}")
+    print(f"Test acc:  {test_acc:.4f}")
+
+    model.eval()
+
+    # Reset index so dataset idx matches dataframe row
+    test_df = test_df.reset_index(drop=True)
+
+    # Create empty column for predicted probability of "up"
+    test_df["pred_prob_up"] = None
+
+    with torch.no_grad():
+        for images, labels, indices in test_loader:
+            images = images.to(device)
+
+            outputs = model(images)
+
+            # Option A: convert 2 logits to probabilities
+            probs_up = F.softmax(outputs, dim=1)[:, 1].cpu().numpy()
+
+            for i, idx in enumerate(indices.numpy()):
+                test_df.loc[idx, "pred_prob_up"] = float(probs_up[i])
+
+    # Optional: also create predicted class from 0.5 threshold
+    test_df["pred_label"] = (test_df["pred_prob_up"].astype(float) >= 0.5).astype(int)
+
+    # Save file
+    predictions_path = os.path.join(test_folder, "test_predictions.csv")
+    test_df.to_csv(predictions_path, index=False)
+
+    print("Saved predictions to:", predictions_path)
 
 if __name__ == "__main__":
     main()
