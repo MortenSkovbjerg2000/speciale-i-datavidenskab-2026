@@ -13,11 +13,20 @@ import numpy as np
 import torch.nn.functional as F
 import time
 from datetime import timedelta
-# ------------------------------------------
-# Base folder names
-# ------------------------------------------
-train_folder = "train_color_candlestick_vol_0_ma_1_bb_0_rsi_0"
-test_folder  = "test_color_candlestick_vol_0_ma_1_bb_0_rsi_0"
+
+HEAD_FOLDER = "color_candlestick_vol_0_ma_1_bb_0_rsi_0"
+
+# Image folders
+train_folder = os.path.join(HEAD_FOLDER, "train")
+test_folder  = os.path.join(HEAD_FOLDER, "test")
+
+# Label files inside the head folder
+train_csv_path = os.path.join(HEAD_FOLDER, "train_labels.csv")
+test_csv_path  = os.path.join(HEAD_FOLDER, "test_labels.csv")
+
+# Output files inside the head folder
+model_save_path = os.path.join(HEAD_FOLDER, "best_AI_model.pth")
+predictions_path = os.path.join(HEAD_FOLDER, "predictions.csv")
 
 # Choose how many tickers to use
 # Set to None if you want all tickers
@@ -147,9 +156,6 @@ def evaluate(model, loader, criterion, device):
 
 def main():
     script_start_time = time.perf_counter()
-    # Build paths
-    train_csv_path = os.path.join(train_folder, "labels.csv")
-    test_csv_path  = os.path.join(test_folder, "labels.csv")
 
     # Load csv files
     train_full_df = pd.read_csv(train_csv_path)
@@ -335,11 +341,6 @@ def main():
     best_val_loss = float("inf")
     patience_counter = 0
 
-    model_save_path = os.path.join(
-        train_folder,
-        f"best_jiang_baseline_i5.pth"
-    )
-
     for epoch in range(num_epochs):
         epoch_start_time = time.perf_counter()
 
@@ -387,10 +388,6 @@ def main():
         num_classes=2
     ).to(device)
 
-    model_save_path = os.path.join(
-        train_folder,
-        f"best_jiang_baseline_i5.pth"
-    )
     model.load_state_dict(torch.load(model_save_path, map_location=device))
 
     test_loss, test_acc = evaluate(model, test_loader, criterion, device)
@@ -422,7 +419,6 @@ def main():
     test_df["pred_label"] = (test_df["pred_prob_up"].astype(float) >= 0.5).astype(int)
 
     # Save file
-    predictions_path = os.path.join(test_folder, "test_predictions.csv")
     test_df.to_csv(predictions_path, index=False)
 
     print("Saved predictions to:", predictions_path)
