@@ -1,7 +1,4 @@
 *.png
 *.parquet
 *.csv
-!CRSP_kun_3_aktier_test_data.csv
-!CRSP_top100_latest.csv
-
 *.pth
