@@ -14,7 +14,7 @@ import torch.nn.functional as F
 import time
 from datetime import timedelta
 
-HEAD_FOLDER = "color_candlestick_vol_0_ma_1_bb_1_rsi_0"
+HEAD_FOLDER = "color_macd"
 
 # Image folders
 train_folder = os.path.join(HEAD_FOLDER, "train")
