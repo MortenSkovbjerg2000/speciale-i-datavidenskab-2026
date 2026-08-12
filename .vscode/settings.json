@@ -1,0 +1,17 @@
+{
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*",
+
+        "**/color_*/**",
+        "**/grayscale_*/**",
+        "**/train_color_*/**",
+        "**/test_color_*/**",
+        "**/train_res_*/**",
+        "**/test_res_*/**",
+
+        "**/*.csv",
+        "**/*.parquet"
+    ]
+}
