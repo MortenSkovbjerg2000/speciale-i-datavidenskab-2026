@@ -13,5 +13,11 @@
 
         "**/*.csv",
         "**/*.parquet"
-    ]
+    ],
+
+"editor.unicodeHighlight.invisibleCharacters": true,
+"editor.unicodeHighlight.ambiguousCharacters": true,
+"editor.unicodeHighlight.nonBasicASCII": true,
+"editor.renderWhitespace": "all"
 }
+

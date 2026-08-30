@@ -14,7 +14,7 @@ import torch.nn.functional as F
 import time
 from datetime import timedelta
 
-HEAD_FOLDER = "color_ohlc_volume_ma"
+HEAD_FOLDER = "color_candlestick_rsi_14_quarter_panel"
 
 # Image folders
 train_folder = os.path.join(HEAD_FOLDER, "train")
@@ -82,7 +82,7 @@ class SimpleCNN(nn.Module):
         #   After conv1 (same padding): 32x15, then pool1 (2x1): 16x15.
         #   After conv2 (same padding): 16x15, then pool2 (2x1): 8x15.
         # Flattened features: 128 * 8 * 15 = 15360.
-        self.fc = nn.Linear(128 * 8 * 15, num_classes) # Jonas sendte dette men virker kun for 32x15
+        self.fc = nn.Linear(128 * 8 * 15, num_classes) # Jonas sendte dette men virker kun for 32x15 specifikt til Jiang 
         # self.fc = nn.Linear(128 * 24 * 96, num_classes)
 
     def forward(self, x):
